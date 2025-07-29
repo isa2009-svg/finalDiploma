@@ -8,12 +8,12 @@ const lostRoutes = require('./routes/Lostroutes');
 const lostRoutes2 = require('./routes/Lostroutes2')
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 app.use('/api/lost', lostRoutes);
 app.use('/api/taby', lostRoutes2)
 app.use('/uploads', express.static('uploads'));
+app.use('/uploads/uploads2', express.static('uploads'));
 
 // Маршруттар
 app.use(authRoutes); // мысалы, /api/auth/...

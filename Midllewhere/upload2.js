@@ -4,7 +4,7 @@ const path = require('path');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads2/');  // Файлдар сақталатын бума
+    cb(null, 'uploads/uploads2/');  // Файлдар сақталатын бума
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); // Файл атын өзгерту
