@@ -2,8 +2,9 @@ const pool = require('../config/db');
 
 async function addLostItem(req, res) {
   try {
-    const { title, description, location, date_lost, phone, email } = req.body;
+    const { title, description, location, date_lost, phone } = req.body;
     const image = req.file?.filename;
+    const email = req.user.email; // 👈 Токеннен алынған email
 
     if (!title || !description || !location || !date_lost || !phone || !image ) {
       console.log(title,description,location,date_lost,phone,image)
@@ -24,7 +25,19 @@ async function addLostItem(req, res) {
     res.status(500).json({ message: 'Сервер қатесі' });
   }
 }
-
+async function getUserLostItems(req, res) {
+  try {
+    const email = req.params.email;
+    const result = await pool.query(
+      'SELECT * FROM lost_items WHERE email = $1 ORDER BY id DESC',
+      [email]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Қате:', err.message);
+    res.status(500).json({ message: 'Сервер қатесі' });
+  }
+}
 async function getAllLostItems(req, res) {
   try {
     const result = await pool.query('SELECT * FROM lost_items ORDER BY id DESC');
@@ -34,7 +47,27 @@ async function getAllLostItems(req, res) {
     res.status(500).json({ message: 'Сервер қатесі' });
   }
 }
+async function getLostItemById(req, res) {
+  console.log(">>>>>>>>>>>>>>>>>>>")
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM lost_items WHERE id = $1', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Зат табылмады' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Қате:', err.message);
+    res.status(500).json({ message: 'Сервер қатесі' });
+  }
+}
+
+
 module.exports = {
   getAllLostItems,
   addLostItem,
+  getUserLostItems,
+  getLostItemById
 };

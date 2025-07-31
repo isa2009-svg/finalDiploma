@@ -1,10 +1,16 @@
+
 const express = require('express');
 const router = express.Router();
 const upload = require('../Midllewhere/upload2');
-const { getAllLostItems, addLostItem, getAllFoundItems, addFoundItem } = require('../controllers/Lostcontrollers2');
+const verifyToken = require('../Midllewhere/verifyToken');
 
-router.post('/add', upload.single('image'), addFoundItem);
+const { getAllLostItems, addLostItem, getAllFoundItems, addFoundItem, getUserLostItems,getLostItemById } = require('../controllers/Lostcontrollers2');
 
-router.get('/allfound', getAllFoundItems); // 👈 Міне осы
+router.post('/add', verifyToken, upload.single('image'), addFoundItem);
 
+
+router.get('/user/:email', getUserLostItems);
+router.get('/allfound', getAllFoundItems);
+router.get('/:id', getLostItemById);
 module.exports = router;
+

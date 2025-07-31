@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+const SECRET_KEY = process.env.JWT_SECRET;
 
 async function registerUser(req, res) {
   const { name, email, password } = req.body;
@@ -23,7 +23,7 @@ async function registerUser(req, res) {
       [name, email, hashedPassword]
     );
 
-    const token = jwt.sign({ name, email }, SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ name, email }, SECRET_KEY, { expiresIn: '30d' });
 
     res.status(201).json({ message: 'Тіркеу сәтті өтті', token });
   } catch (err) {
@@ -52,7 +52,7 @@ async function loginUser(req, res) {
     const token = jwt.sign(
       { userId: user.id, name: user.name, email: user.email },
       SECRET_KEY,
-      { expiresIn: '1h' }
+      { expiresIn: '30d' }
     );
 
     res.json({ token });
@@ -62,7 +62,18 @@ async function loginUser(req, res) {
   }
 }
 
+async function getMyLostItems(req, res) {
+  const email = req.user.email;
+  const result = await pool.query(
+    'SELECT * FROM lost_items WHERE email = $1 ORDER BY id DESC',
+    [email]
+  );
+  res.json(result.rows);
+}
+
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  getMyLostItems
 };
